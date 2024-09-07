@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(to right, #1a724f, #0a2b60);
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-100">
+    <!-- Navbar -->
+    <nav class="bg-gray-800 p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <!-- Logo -->
+                <img src="img/logo.png" alt="Logo" class="w-34 h-14">
+                <h1 class="text-white text-2xl font-bold text-center">Admin Dashboard</h1>
+            </div>
+            <div class="flex items-center space-x-4">
+                <!-- Display the username -->
+                <div id="usernameDisplay" class="text-white"></div>
+                <!-- Logout Button -->
+                <button id="logoutBtn" class="bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mx-auto mt-8">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-3xl font-bold text-white">Student Information</h2>
+            <button id="registerBtn" class="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700">Register New Student</button>
+        </div>
+
+        <!-- Student Search -->
+        <div class="mb-6">
+            <input type="text" id="searchInput" placeholder="Search Students..." class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+
+        <!-- Student List -->
+        <table class="min-w-full bg-white rounded-lg shadow">
+            <thead>
+                <tr>
+                    <th class="py-3 px-4 text-left bg-gray-200 font-semibold text-gray-600">Name</th>
+                    <th class="py-3 px-4 text-left bg-gray-200 font-semibold text-gray-600">Email</th>
+                    <th class="py-3 px-4 text-left bg-gray-200 font-semibold text-gray-600">Phone</th>
+                    <th class="py-3 px-4 text-left bg-gray-200 font-semibold text-gray-600">Course</th>
+                    <th class="py-3 px-4 text-left bg-gray-200 font-semibold text-gray-600">City</th>
+                    <th class="py-3 px-4 text-left bg-gray-200 font-semibold text-gray-600">Education</th>
+                    <th class="py-3 px-4 text-left bg-gray-200 font-semibold text-gray-600">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Rows will be dynamically inserted here by JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Register New Student Form (Hidden by default) -->
+    <div id="registrationForm" class="hidden fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
+        <div class="bg-yellow-100 rounded-lg shadow-lg p-8 w-full max-w-md">
+           <!-- <h2 class="text-2xl font-bold text-gray-800 mb-6">Register New Student</h2> -->
+           <form id="studentForm">
+            <!-- Logo at the top -->
+            <div class="flex justify-center mb-6">
+                <img src="img/logo1.png" alt="Logo" class="w-28 h-28">
+            </div>
+        
+            <!-- Form fields with labels and inputs side by side -->
+            <div class="mb-4 flex items-center">
+                <label class="w-1/3 text-gray-700 mr-4" for="name">Name</label>
+                <input type="text" id="name" name="name" class="w-2/3 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+            </div>
+            <div class="mb-4 flex items-center">
+                <label class="w-1/3 text-gray-700 mr-4" for="email">Email</label>
+                <input type="email" id="email" name="email" class="w-2/3 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+            </div>
+            <div class="mb-4 flex items-center">
+                <label class="w-1/3 text-gray-700 mr-4" for="phone">Phone Number</label>
+                <input type="tel" id="phone" name="phone" class="w-2/3 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+            </div>
+            <div class="mb-4 flex items-center">
+                <label class="w-1/3 text-gray-700 mr-4" for="course">Course</label>
+                <input type="text" id="course" name="course" class="w-2/3 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+            </div>
+            <div class="mb-4 flex items-center">
+                <label class="w-1/3 text-gray-700 mr-4" for="city">City</label>
+                <input type="text" id="city" name="city" class="w-2/3 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+            </div>
+            <div class="mb-6 flex items-center">
+                <label class="w-1/3 text-gray-700 mr-4" for="education">Education</label>
+                <input type="text" id="education" name="education" class="w-2/3 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+            </div>
+        
+            <!-- Button group centered -->
+            <div class="flex justify-center">
+                <button type="button" id="resetBtn" class="bg-gray-500 text-white py-2 px-4 rounded-lg mr-2 hover:bg-gray-600">Reset</button>
+                <button type="button" id="cancelBtn" class="bg-red-500 text-white py-2 px-4 rounded-lg mr-2 hover:bg-red-600">Cancel</button>
+                <button type="submit" class="bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700">Register</button>
+            </div>
+        </form>
+        
+        </div>
+    </div>
+
+    <script>
+        // Retrieve and display the username
+        document.getElementById('usernameDisplay').textContent = 'Welcome, ' + localStorage.getItem('username');
+
+        // Show form when Register New Student button is clicked
+        document.getElementById('registerBtn').addEventListener('click', () => {
+            document.getElementById('registrationForm').classList.remove('hidden');
+        });
+
+        // Hide form when Cancel button is clicked
+        document.getElementById('cancelBtn').addEventListener('click', () => {
+            document.getElementById('registrationForm').classList.add('hidden');
+        });
+
+        // Reset form fields when Reset button is clicked
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            document.getElementById('studentForm').reset();
+        });
+
+        // Handle form submission
+        document.getElementById('studentForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const studentData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                course: document.getElementById('course').value,
+                city: document.getElementById('city').value,
+                education: document.getElementById('education').value,
+            };
+
+            fetch('http://localhost:3000/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(studentData),
+            })
+            .then(response => response.text())
+            .then(data => {
+                alert(data);
+                document.getElementById('registrationForm').classList.add('hidden');
+                fetchStudents(); // Refresh student list
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        // Handle logout button click
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            const userConfirmed = confirm('Would you like to log out now?');
+            if (userConfirmed) {
+                localStorage.removeItem('username');
+                window.location.href = 'http://localhost:3000/';
+            } else {
+                window.location.href = 'home1.html';
+            }
+        });
+
+        // Fetch and display students
+        function fetchStudents() {
+            fetch('http://localhost:3000/students')
+            .then(response => response.json())
+            .then(students => {
+                const studentList = document.querySelector('tbody');
+                studentList.innerHTML = ''; // Clear existing rows
+
+                students.forEach(student => {
+                    const row = document.createElement('tr');
+
+                    row.innerHTML = `
+                        <td class="py-3 px-4 border-b">${student.name}</td>
+                        <td class="py-3 px-4 border-b">${student.email}</td>
+                        <td class="py-3 px-4 border-b">${student.phone}</td>
+                        <td class="py-3 px-4 border-b">${student.course}</td>
+                        <td class="py-3 px-4 border-b">${student.city}</td>
+                        <td class="py-3 px-4 border-b">${student.education}</td>
+                        <td class="py-3 px-4 border-b">
+                            <button class="text-blue-600 hover:underline">Edit</button>
+                            <button class="text-red-600 hover:underline ml-2">Delete</button>
+                        </td>
+                    `;
+
+                    studentList.appendChild(row);
+
+                });
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        // Fetch students on page load
+        document.addEventListener('DOMContentLoaded', fetchStudents);
+
+        // Handle search input
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            const students = document.querySelectorAll('tbody tr');
+
+        students.forEach(student => {
+            const name = student.querySelector('td:nth-child(1)').textContent.toLowerCase();
+            const email = student.querySelector('td:nth-child(2)').textContent.toLowerCase();
+            const phone = student.querySelector('td:nth-child(3)').textContent.toLowerCase();
+            const course = student.querySelector('td:nth-child(4)').textContent.toLowerCase();
+            const city = student.querySelector('td:nth-child(5)').textContent.toLowerCase();
+            const education = student.querySelector('td:nth-child(6)').textContent.toLowerCase();
+
+        // Check if the query matches any of the student fields
+            if (name.includes(query) || email.includes(query) || phone.includes(query) ||
+                course.includes(query) || city.includes(query) || education.includes(query)) {
+                student.style.display = ''; // Show matching rows
+            } else {
+                student.style.display = 'none'; // Hide non-matching rows
+            }
+    });
+});
+
+    </script>
+</body>
+</html>

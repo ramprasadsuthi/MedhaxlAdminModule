@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(to right, #1a724f, #0a2b60);
+        }
+        .login-box {
+            background: linear-gradient(to bottom right, #ffffff, #f0f0f0);
+            border: 1px solid #d1d5db;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), 0 6px 20px rgba(0, 0, 0, 0.1);
+            transform: perspective(1000px) rotateX(2deg);
+        }
+        .login-box:hover {
+            transform: perspective(1000px) rotateX(0deg);
+            transition: transform 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center h-screen">
+    <div class="login-box w-full max-w-md rounded-lg p-8">
+        <!-- Logo -->
+        <img src="img/logo.png" alt="Logo" class="w-auto h-24 mx-auto">
+        <h2 class="text-center text-3xl font-bold text-gray-900 mb-8">Login</h2>
+        <form id="loginForm" class="space-y-6">
+            <div>
+                <label class="block text-gray-700 text-sm font-semibold mb-2" for="username">
+                    Username
+                </label>
+                <input class="block w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" id="username" type="text" placeholder="Enter your username" name="username" required>
+            </div>
+            <div>
+                <label class="block text-gray-700 text-sm font-semibold mb-2" for="password">
+                    Password
+                </label>
+                <input class="block w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" id="password" type="password" placeholder="Enter your password" name="password" required>
+            </div>
+            <div class="flex items-center justify-center space-x-4">
+                <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" type="submit">
+                    Login
+                </button>
+                <button type="reset" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500">
+                    Reset
+                </button>
+            </div>
+         </form>
+    </div>
+    <script>
+        document.getElementById('loginForm').onsubmit = async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const response = await fetch('/login', {
+                method: 'POST',
+                body: JSON.stringify({
+                    username: formData.get('username'),
+                    password: formData.get('password')
+                }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const result = await response.text();
+            alert(result);
+        };
+    </script>
+</body>
+</html>
