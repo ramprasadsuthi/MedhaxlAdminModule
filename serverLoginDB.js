@@ -86,11 +86,50 @@ app.put('/students/:id', (req, res) => {
     const studentId = req.params.id;
     const updatedData = req.body;
 
-    const query = 'UPDATE enroll SET name = ?, email = ?, phone = ?, course = ?, city = ?, education = ? WHERE id = ?';
+    // Create arrays for dynamic query
+    let fields = [];
+    let values = [];
 
-    db.query(query, [updatedData.name, updatedData.email, updatedData.phone, updatedData.course, updatedData.city, updatedData.education, studentId], (err, result) => {
+    // Add fields only if they exist in the request body
+    if (updatedData.name) {
+        fields.push('name = ?');
+        values.push(updatedData.name);
+    }
+    if (updatedData.email) {
+        fields.push('email = ?');
+        values.push(updatedData.email);
+    }
+    if (updatedData.phone) {
+        fields.push('phone = ?');
+        values.push(updatedData.phone);
+    }
+    if (updatedData.course) {
+        fields.push('course = ?');
+        values.push(updatedData.course);
+    }
+    if (updatedData.city) {
+        fields.push('city = ?');
+        values.push(updatedData.city);
+    }
+    if (updatedData.education) {
+        fields.push('education = ?');
+        values.push(updatedData.education);
+    }
+
+    // If there are no fields to update, return a bad request
+    if (fields.length === 0) {
+        return res.status(400).send('No fields to update');
+    }
+
+    // Join the fields to create the query
+    const query = `UPDATE enroll SET ${fields.join(', ')} WHERE id = ?`;
+
+    // Add studentId to the values array
+    values.push(studentId);
+
+    // Execute the query
+    db.query(query, values, (err, result) => {
         if (err) {
-            console.error('Database error:', err); // Print the DB error to the console
             return res.status(500).send('Error updating student: ' + err.message);
         }
 
@@ -101,4 +140,5 @@ app.put('/students/:id', (req, res) => {
         res.status(200).send('Student updated successfully');
     });
 });
+
 

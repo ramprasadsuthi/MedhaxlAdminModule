@@ -89,7 +89,14 @@
             </div>
             <div class="mb-4 flex items-center">
                 <label class="w-1/3 text-gray-700 mr-4" for="phone">Phone Number</label>
-                <input type="tel" id="phone" name="phone" class="w-2/3 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                <input 
+                    type="tel" 
+                    id="phone" 
+                    name="phone" 
+                    class="w-2/3 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                    required 
+                    pattern="[1-9]{1}[0-9]{9}" 
+                    title="Phone number must be 10 digits long and cannot start with 0">
             </div>
             <div class="mb-4 flex items-center">
                 <label class="w-1/3 text-gray-700 mr-4" for="course">Course</label>
@@ -141,7 +148,14 @@
                 </div>
                 <div class="mb-4 flex items-center">
                     <label class="w-1/3 text-gray-700 mr-4" for="editPhone">Phone Number</label>
-                    <input type="tel" id="editPhone" name="phone" class="w-2/3 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    <input 
+                        type="tel" 
+                        id="editPhone" 
+                        name="phone" 
+                        class="w-2/3 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                        required 
+                        pattern="[1-9]{1}[0-9]{9}" 
+                        title="Phone number must be 10 digits long and cannot start with 0">
                 </div>
                 <div class="mb-4 flex items-center">
                     <label class="w-1/3 text-gray-700 mr-4" for="editCourse">Course</label>
@@ -165,8 +179,18 @@
         </div>
     </div>
 
+        <!-- Modal HTML -->
+    <div id="popupMessage" class="hidden fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+        <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+            <p id="popupText" class="text-lg font-semibold text-gray-700 mb-4"></p>
+            <button id="popupCloseBtn" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-200">
+                Close
+            </button>
+        </div>
+    </div>
 
-    <script>
+
+<script>
         // Retrieve and display the username
         document.getElementById('usernameDisplay').textContent = 'Welcome, ' + localStorage.getItem('username');
 
@@ -276,12 +300,18 @@
     document.getElementById('editCity').value = student.city;
     document.getElementById('editEducation').value = student.education;
 
+    const editForm = document.getElementById('editStudentForm');
+
+    // Remove any existing submit event listener to prevent multiple triggers
+    const newForm = editForm.cloneNode(true);
+    editForm.parentNode.replaceChild(newForm, editForm);
+
     // Handle form submission for saving updates
-    document.getElementById('editStudentForm').addEventListener('submit', (e) => {
+    newForm.addEventListener('submit', (e) => {
         e.preventDefault();
 
+        // Get the updated values from the form
         const updatedStudent = {
-            id: student.id,
             name: document.getElementById('editName').value,
             email: document.getElementById('editEmail').value,
             phone: document.getElementById('editPhone').value,
@@ -290,28 +320,44 @@
             education: document.getElementById('editEducation').value,
         };
 
+        // Create a request body that only contains the fields that have changed
+        const requestBody = {};
+        for (const key in updatedStudent) {
+            if (updatedStudent[key] !== student[key]) {
+                requestBody[key] = updatedStudent[key];
+            }
+        }
+
+        // Check if there are any changes before making the request
+        if (Object.keys(requestBody).length === 0) {
+            //alert('No changes were made.');
+            showPopup('No changes were made.');
+            return;
+        }
+
         // Make PUT request to update the student in the database
         fetch(`http://localhost:3000/students/${student.id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(updatedStudent),
-            })
-            .then(response => response.text())
-            .then(data => {
+            body: JSON.stringify(requestBody),
+        })
+        .then(response => response.text())
+        .then(data => {
             alert(data);
             document.getElementById('editForm').classList.add('hidden');
             fetchStudents(); // Refresh the student list
-            })
-            .catch(error => console.error('Error:', error));
-        });
+        })
+        .catch(error => console.error('Error:', error));
+    });
 
     // Handle cancel button to close the edit form
     document.getElementById('editCancelBtn').addEventListener('click', () => {
         document.getElementById('editForm').classList.add('hidden');
     });
 }
+
 
 
         // Update the existing Edit button event listener to open the edit form
@@ -372,8 +418,23 @@
         }
     });
 
+    function showPopup(message) {
+    const popup = document.getElementById('popupMessage');
+    const popupText = document.getElementById('popupText');
+
+    // Set the message in the popup
+    popupText.innerText = message;
+
+    // Show the popup
+    popup.classList.remove('hidden');
+
+    // Close the popup when clicking the close button
+    document.getElementById('popupCloseBtn').addEventListener('click', function() {
+        popup.classList.add('hidden');
+    });
+}
+
 </script>
 
-    </script>
 </body>
 </html>
