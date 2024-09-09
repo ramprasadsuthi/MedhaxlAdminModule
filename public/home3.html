@@ -179,15 +179,16 @@
         </div>
     </div>
 
-        <!-- Modal HTML -->
+    <!-- Modal HTML -->
     <div id="popupMessage" class="hidden fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-        <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+        <div class="bg-yellow-300 p-6 rounded-lg shadow-lg text-center">
             <p id="popupText" class="text-lg font-semibold text-gray-700 mb-4"></p>
-            <button id="popupCloseBtn" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-200">
+            <button id="popupCloseBtn" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition duration-200">
                 Close
             </button>
         </div>
     </div>
+
 
 
 <script>
@@ -231,7 +232,8 @@
             })
             .then(response => response.text())
             .then(data => {
-                alert(data);
+                showPopup(data);
+               // alert(data);
                 document.getElementById('registrationForm').classList.add('hidden');
                 fetchStudents(); // Refresh student list
             })
@@ -345,7 +347,8 @@
         })
         .then(response => response.text())
         .then(data => {
-            alert(data);
+            //alert(data);
+            showPopup(data);
             document.getElementById('editForm').classList.add('hidden');
             fetchStudents(); // Refresh the student list
         })
@@ -414,7 +417,8 @@
         } else {
             emailError.classList.add('hidden');
             // Form submission logic here
-            alert('Email is valid, form can be submitted');
+            //alert('Email is valid, form can be submitted');
+            showPopup('Email is valid, form can be submitted');
         }
     });
 

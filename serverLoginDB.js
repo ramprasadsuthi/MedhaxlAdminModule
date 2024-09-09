@@ -40,11 +40,30 @@ app.get('/', (req, res) => {
 
 // Login route
 app.post('/login', (req, res) => {
-    const { username, password } = req.body;
+    const authHeader = req.headers['authorization'];
+    
+    if (!authHeader) {
+        return res.status(401).send('Authorization header missing');
+    }
+
+    // Ensure the authorization header contains 'Basic'
+    const [authType, authValue] = authHeader.split(' ');
+
+    if (authType !== 'Basic' || !authValue) {
+        return res.status(401).send('Invalid Authorization format');
+    }
+
+    // Decode base64 to get 'username:password'
+    const decodedCredentials = Buffer.from(authValue, 'base64').toString('utf8');
+    const [username, password] = decodedCredentials.split(':');
+
+    if (!username || !password) {
+        return res.status(401).send('Credentials not provided');
+    }
 
     // Query to check if the username and password match in the database
     const sql = 'SELECT * FROM login WHERE username = ? AND password = ?';
-    
+
     db.query(sql, [username, password], (err, results) => {
         if (err) {
             return res.status(500).send('Database query failed');
@@ -57,6 +76,7 @@ app.post('/login', (req, res) => {
         }
     });
 });
+
 
 // Route to fetch students
 app.get(`/students`, (req, res) => {
@@ -140,5 +160,39 @@ app.put('/students/:id', (req, res) => {
         res.status(200).send('Student updated successfully');
     });
 });
+
+app.post('/send-reset-link', (req, res) => {
+    const { email } = req.body;
+    
+    // Query to check if the email exists in the login table
+    const query = 'SELECT * FROM login WHERE email = ?';
+
+    db.query(query, [email], (err, result) => {
+        if (err) {
+            return res.status(500).send('Server error');
+        }
+
+        if (result.length === 0) {
+            // If the email does not exist in the login table
+            return res.status(404).send('This email address is not registered in our system.');
+        }
+
+        // If email exists, send a reset link (implement email sending logic here)
+        // For example, use Nodemailer to send a reset email
+        sendPasswordResetEmail(email); // Replace with your email sending logic
+
+        res.send('Password reset link has been sent to your email.');
+    });
+});
+
+// Function to send the password reset email (implement using Nodemailer or other service)
+function sendPasswordResetEmail(email) {
+    // Use Nodemailer or another service to send the email with a reset link
+    console.log(`Sending password reset email to: ${email}`);
+    
+    // Example: Create reset link token and send email logic
+    // Generate reset token, create link, and email it to the user
+}
+
 
 
