@@ -41,6 +41,8 @@
             <input type="text" id="searchInput" placeholder="Search Students..." class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
         </div>
 
+        
+
         <!-- Student List -->
         <table class="min-w-full bg-white rounded-lg shadow">
             <thead>
@@ -60,12 +62,40 @@
             </tbody>
         </table>
 
-         <!-- Pagination Controls -->
-        <div class="mt-6 flex justify-center">
-            <button id="prevPage" class="bg-gray-500 text-white py-2 px-4 rounded-lg mr-2 hover:bg-gray-600">Previous</button>
-            <span id="currentPage" class="text-white px-4 py-2">Page 1</span>
-            <button id="nextPage" class="bg-gray-500 text-white py-2 px-4 rounded-lg ml-2 hover:bg-gray-600">Next</button>
+        <div class="flex items-center justify-center mt-6 space-x-4">
+            <!-- Pagination Controls -->
+            <button id="prevPage" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed">
+                Previous
+            </button>
+        
+            <span id="currentPage" class="text-white font-semibold">
+                Page 1
+            </span>
+        
+            <button id="nextPage" class="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed">
+                Next
+            </button>
+        
+            <!-- Total Records & Pages -->
+            <div class="text-white ml-6 space-x-2">
+                <span id="totalRecords" class="text-sm">
+                    Total Records: 0
+                </span>
+                <span id="totalPages" class="text-sm">
+                    Total Pages: 0
+                </span>
+            </div>
+        
+            <!-- Jump to Page -->
+            <div class="flex items-center space-x-2 ml-6">
+                <input type="number" id="jumpToPageInput" placeholder="Page Number" min="1"
+                    class="w-20 px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+                <button id="jumpToPageBtn" class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600">
+                    Jump
+                </button>
+            </div>
         </div>
+        
 
     </div>
 
@@ -259,23 +289,27 @@
             }
         });
 
-        let currentPage = 1;
-    const studentsPerPage = 5; // Number of students per page
+    let currentPage = 1;
+    const studentsPerPage = 7;
 
     // Fetch students with pagination
     function fetchStudents(page = 1) {
-        fetch('http://localhost:3000/students')
+        fetch(`http://localhost:3000/students?page=${page}&limit=${studentsPerPage}`)
             .then(response => response.json())
-            .then(students => {
+            .then(data => {
+                const students = data.students;
+                const totalPages = data.totalPages;
+                const totalRecords = data.totalRecords; // Number of total records
                 const studentList = document.getElementById('studentList');
-                studentList.innerHTML = ''; // Clear existing rows
-                
-                // Calculate start and end index for pagination
-                const startIndex = (page - 1) * studentsPerPage;
-                const endIndex = Math.min(startIndex + studentsPerPage, students.length);
 
-                for (let i = startIndex; i < endIndex; i++) {
-                    const student = students[i];
+                // Update the total records and total pages on the UI
+                document.getElementById('totalRecords').textContent = `Total Records: ${totalRecords}`;
+                document.getElementById('totalPages').textContent = `Total Pages: ${totalPages}`;
+
+                studentList.innerHTML = ''; // Clear existing rows
+
+                // Display students
+                students.forEach(student => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
                         <td class="py-3 px-4 border-b">${student.id}</td>
@@ -291,8 +325,6 @@
                         </td>
                     `;
                     studentList.appendChild(row);
-
-                    // Add edit and delete functionalities as needed
                      // Add edit button event listener
                      row.querySelector('.editBtn').addEventListener('click', () => {
                         openEditForm(student); // Pass the student data to the edit form
@@ -302,21 +334,21 @@
                     row.querySelector('.deleteBtn').addEventListener('click', () => {
                         handleDelete(student.id); // Call the delete function
                     });
-                }
+                });
 
-                // Update current page number
-                document.getElementById('currentPage').textContent = `Page ${page}`;
+                // Update current page, total records, and total pages display
+                document.getElementById('currentPage').textContent = `Page ${data.currentPage}`;
+                document.getElementById('totalRecords').textContent = `Total Records: ${totalRecords}`;
+                document.getElementById('totalPages').textContent = `Total Pages: ${totalPages}`;
+
+                // Disable/enable pagination buttons
+                document.getElementById('prevPage').disabled = data.currentPage === 1;
+                document.getElementById('nextPage').disabled = data.currentPage === totalPages;
             })
             .catch(error => console.error('Error:', error));
     }
 
-    // Handle next page button click
-    document.getElementById('nextPage').addEventListener('click', () => {
-        currentPage++;
-        fetchStudents(currentPage);
-    });
-
-    // Handle previous page button click
+    // Event listeners for pagination buttons
     document.getElementById('prevPage').addEventListener('click', () => {
         if (currentPage > 1) {
             currentPage--;
@@ -324,8 +356,28 @@
         }
     });
 
-    // Fetch the first page of students when the page loads
-    fetchStudents();
+    document.getElementById('nextPage').addEventListener('click', () => {
+        currentPage++;
+        fetchStudents(currentPage);
+    });
+
+    // Event listener for "Jump to Page" button
+    document.getElementById('jumpToPageBtn').addEventListener('click', () => {
+        const jumpToPageInput = document.getElementById('jumpToPageInput');
+        const page = parseInt(jumpToPageInput.value);
+
+        if (page && page > 0) {
+            currentPage = page;
+            fetchStudents(currentPage);
+        } else {
+            alert('Please enter a valid page number.');
+        }
+    });
+
+// Initial fetch to load the first page
+fetchStudents(currentPage);
+
+
 
 
     function openEditForm(student) {

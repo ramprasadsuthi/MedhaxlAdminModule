@@ -57,63 +57,33 @@
          </form>
     </div>
 
-        <!-- Modal HTML -->
-        <div id="popupMessage" class="hidden fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-            <div class="bg-yellow-300 p-6 rounded-lg shadow-lg text-center">
-                <p id="popupText" class="text-lg font-semibold text-gray-700 mb-4"></p>
-                <button id="popupCloseBtn" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700 transition duration-200">
-                    Close
-                </button>
-            </div>
-        </div>
-
     <script>
         document.getElementById('loginForm').onsubmit = async function(e) {
             e.preventDefault();
-
             const formData = new FormData(this);
             const username = formData.get('username');
-            const password = formData.get('password');
-
-            // Encode the username and password for Basic Auth
-            const credentials = btoa(`${username}:${password}`);
 
             const response = await fetch('/login', {
                 method: 'POST',
+                body: JSON.stringify({
+                    username: username,
+                    password: formData.get('password')
+                }),
                 headers: {
-                    'Authorization': `Basic ${credentials}`,
                     'Content-Type': 'application/json'
                 }
             });
 
             const result = await response.text();
-            if (response.ok) {
-                // Store the username in localStorage
+            if (response.ok) { // If the login is successful
+                 // Store the username in localStorage
                 localStorage.setItem('username', username);
                 // Redirect to home page
                 window.location.href = '/home3.html'; 
             } else {
-                showPopup(result)
-               // alert(result); // Show the error message
+                alert(result); // Show the error message
             }
         };
-
-        function showPopup(message) {
-        const popup = document.getElementById('popupMessage');
-        const popupText = document.getElementById('popupText');
-
-        // Set the message in the popup
-        popupText.innerText = message;
-
-        // Show the popup
-        popup.classList.remove('hidden');
-
-        // Close the popup when clicking the close button
-        document.getElementById('popupCloseBtn').addEventListener('click', function() {
-            popup.classList.add('hidden');
-        });
-    }
-
     </script>
 </body>
 </html>

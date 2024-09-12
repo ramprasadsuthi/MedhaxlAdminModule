@@ -79,11 +79,12 @@
             const credentials = btoa(`${username}:${password}`);
 
             const response = await fetch('/login', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Basic ${credentials}`,
-                    'Content-Type': 'application/json'
-                }
+            method: 'POST',
+            headers: {
+                'Authorization': `Basic ${credentials}`,
+                // No 'Content-Type' header here, let the browser handle it
+            },
+            body: formData // Sending formData as body
             });
 
             const result = await response.text();
